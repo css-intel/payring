@@ -1,15 +1,17 @@
 import { useNavigate } from 'react-router-dom';
 import { 
-  Plus, 
   Send, 
   FileText, 
+  ArrowDownLeft,
   ArrowUpRight, 
-  ArrowDownLeft, 
   Bell,
   Zap,
   FolderOpen,
   ChevronRight,
-  TrendingUp
+  TrendingUp,
+  QrCode,
+  Users,
+  Wallet
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { UserAvatar } from '@/components/ui/avatar';
@@ -34,8 +36,8 @@ export function DashboardScreen() {
   const quickActions = [
     { icon: Send, label: 'Send', color: 'bg-primary', route: '/payments?tab=send' },
     { icon: ArrowDownLeft, label: 'Request', color: 'bg-green-500', route: '/payments?tab=request' },
-    { icon: Plus, label: 'Agreement', color: 'bg-purple-500', route: '/agreements/new' },
-    { icon: FileText, label: 'Templates', color: 'bg-amber-500', route: '/templates' },
+    { icon: QrCode, label: 'QR Code', color: 'bg-purple-500', route: '/qr' },
+    { icon: Wallet, label: 'Wallet', color: 'bg-amber-500', route: '/wallet' },
   ];
 
   const features = [
@@ -52,10 +54,10 @@ export function DashboardScreen() {
       route: '/agreements/new',
     },
     {
-      icon: Bell,
-      title: 'Track & Notify',
-      description: 'Real-time milestone updates',
-      route: '/activity',
+      icon: Users,
+      title: 'Contacts',
+      description: 'Manage your payment contacts',
+      route: '/contacts',
     },
     {
       icon: FolderOpen,
