@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { BottomNavigation } from '@/components/layout/Navigation';
 import { DashboardScreen } from '@/screens/DashboardScreen';
 import { PaymentsScreen } from '@/screens/PaymentsScreen';
+import PaymentConfirmScreen from '@/screens/PaymentConfirmScreen';
 import { AgreementsScreen } from '@/screens/AgreementsScreen';
 import { NewAgreementScreen } from '@/screens/NewAgreementScreen';
 import AgreementWizardScreen from '@/screens/AgreementWizardScreen';
@@ -14,6 +15,10 @@ import { ProfileScreen } from '@/screens/ProfileScreen';
 import { SecurityScreen } from '@/screens/SecurityScreen';
 import { AppearanceScreen } from '@/screens/AppearanceScreen';
 import { WalletScreen } from '@/screens/WalletScreen';
+import AddMoneyScreen from '@/screens/AddMoneyScreen';
+import WithdrawScreen from '@/screens/WithdrawScreen';
+import ContactsScreen from '@/screens/ContactsScreen';
+import QRCodeScreen from '@/screens/QRCodeScreen';
 import { TermsOfServiceScreen } from '@/screens/TermsOfServiceScreen';
 import { PrivacyPolicyScreen } from '@/screens/PrivacyPolicyScreen';
 import { RefundPolicyScreen } from '@/screens/RefundPolicyScreen';
@@ -88,7 +93,7 @@ export default function App() {
         path="/payments/confirm"
         element={
           <ProtectedRoute>
-            <div className="p-4">Payment Confirmation Screen (TODO)</div>
+            <PaymentConfirmScreen />
           </ProtectedRoute>
         }
       />
@@ -203,6 +208,42 @@ export default function App() {
         element={
           <ProtectedRoute>
             <WalletScreen />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/wallet/add"
+        element={
+          <ProtectedRoute>
+            <AddMoneyScreen />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/wallet/withdraw"
+        element={
+          <ProtectedRoute>
+            <WithdrawScreen />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Contacts */}
+      <Route
+        path="/contacts"
+        element={
+          <ProtectedRoute>
+            <ContactsScreen />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* QR Code */}
+      <Route
+        path="/qr"
+        element={
+          <ProtectedRoute>
+            <QRCodeScreen />
           </ProtectedRoute>
         }
       />

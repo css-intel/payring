@@ -173,14 +173,14 @@ export function WalletScreen() {
           {/* Action Buttons */}
           <div className="flex gap-4 mt-4">
             <Button 
-              onClick={() => setShowAddFunds(true)}
+              onClick={() => navigate('/wallet/add')}
               className="flex-1 bg-white text-purple-700 hover:bg-white/90"
             >
               <Plus className="w-4 h-4 mr-2" />
               Add Funds
             </Button>
             <Button 
-              onClick={() => setShowWithdraw(true)}
+              onClick={() => navigate('/wallet/withdraw')}
               variant="outline"
               className="flex-1 border-white text-white hover:bg-white/10"
             >
