@@ -5,6 +5,8 @@ import { DashboardScreen } from '@/screens/DashboardScreen';
 import { PaymentsScreen } from '@/screens/PaymentsScreen';
 import { AgreementsScreen } from '@/screens/AgreementsScreen';
 import { NewAgreementScreen } from '@/screens/NewAgreementScreen';
+import AgreementWizardScreen from '@/screens/AgreementWizardScreen';
+import AgreementDetailScreen from '@/screens/AgreementDetailScreen';
 import { ActivityScreen } from '@/screens/ActivityScreen';
 import { SettingsScreen } from '@/screens/SettingsScreen';
 import { AuthScreen } from '@/screens/AuthScreen';
@@ -107,10 +109,18 @@ export default function App() {
         }
       />
       <Route
+        path="/agreements/wizard"
+        element={
+          <ProtectedRoute>
+            <AgreementWizardScreen />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/agreements/:id"
         element={
           <ProtectedRoute>
-            <div className="p-4">Agreement Detail Screen (TODO)</div>
+            <AgreementDetailScreen />
           </ProtectedRoute>
         }
       />
@@ -118,7 +128,7 @@ export default function App() {
         path="/agreements/preview"
         element={
           <ProtectedRoute>
-            <div className="p-4">AI Preview Screen (TODO)</div>
+            <AgreementWizardScreen />
           </ProtectedRoute>
         }
       />
@@ -126,7 +136,7 @@ export default function App() {
         path="/agreements/template"
         element={
           <ProtectedRoute>
-            <div className="p-4">Template Screen (TODO)</div>
+            <AgreementWizardScreen />
           </ProtectedRoute>
         }
       />

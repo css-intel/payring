@@ -454,3 +454,49 @@ async function updateAgreementProgress(agreementId: string): Promise<void> {
     updatedAt: serverTimestamp()
   });
 }
+
+// Alias for backwards compatibility
+export const getAgreementById = getAgreement;
+export const getAgreementMilestones = getMilestones;
+
+// Submit milestone (mark as submitted for review)
+export async function submitMilestone(agreementId: string, milestoneId: string): Promise<void> {
+  await updateMilestoneStatus(agreementId, milestoneId, 'submitted');
+}
+
+// Approve milestone
+export async function approveMilestone(agreementId: string, milestoneId: string): Promise<void> {
+  await updateMilestoneStatus(agreementId, milestoneId, 'approved');
+}
+
+// Cancel agreement
+export async function cancelAgreement(agreementId: string, reason?: string): Promise<void> {
+  const user = auth.currentUser;
+  if (!user) throw new Error('Not authenticated');
+
+  const agreementRef = doc(db, 'agreements', agreementId);
+  const agreementDoc = await getDoc(agreementRef);
+  
+  if (!agreementDoc.exists()) {
+    throw new Error('Agreement not found');
+  }
+
+  const agreement = agreementDoc.data();
+  
+  // Only creator can cancel, and only if not already active with payments
+  if (agreement.creatorId !== user.uid) {
+    throw new Error('Only the creator can cancel this agreement');
+  }
+
+  if (agreement.paidAmountCents > 0) {
+    throw new Error('Cannot cancel an agreement with completed payments. Please raise a dispute instead.');
+  }
+
+  await updateDoc(agreementRef, {
+    status: 'cancelled',
+    cancellationReason: reason || 'Cancelled by creator',
+    cancelledAt: serverTimestamp(),
+    cancelledBy: user.uid,
+    updatedAt: serverTimestamp()
+  });
+}

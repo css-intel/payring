@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Mic, Sparkles, Wand2 } from 'lucide-react';
+import { Mic, Sparkles, Wand2, PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
@@ -20,10 +20,15 @@ export function NewAgreementScreen() {
 
   const handleTextSubmit = () => {
     if (textInput.trim()) {
-      navigate('/agreements/preview', {
+      navigate('/agreements/wizard', {
         state: { input: textInput, method: 'text' },
       });
     }
+  };
+
+  // Navigate to full wizard
+  const handleCreateManually = () => {
+    navigate('/agreements/wizard');
   };
 
   return (
@@ -34,6 +39,18 @@ export function NewAgreementScreen() {
         <p className="text-muted-foreground">
           Describe your deal and let AI generate the contract
         </p>
+      </div>
+
+      {/* Quick Create Button */}
+      <div className="px-4 mb-6">
+        <Button
+          onClick={handleCreateManually}
+          size="lg"
+          className="w-full py-6 text-lg"
+        >
+          <PlusCircle className="w-6 h-6 mr-2" />
+          Create New Agreement
+        </Button>
       </div>
 
       {/* AI Input Section */}
@@ -125,7 +142,7 @@ export function NewAgreementScreen() {
               key={template.id}
               className="cursor-pointer hover:shadow-payring-lg transition-all hover:scale-[1.02]"
               onClick={() =>
-                navigate('/agreements/template', {
+                navigate('/agreements/wizard', {
                   state: { templateId: template.id },
                 })
               }

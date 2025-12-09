@@ -5,6 +5,8 @@ export { DashboardScreen } from './DashboardScreen';
 export { PaymentsScreen } from './PaymentsScreen';
 export { AgreementsScreen } from './AgreementsScreen';
 export { NewAgreementScreen } from './NewAgreementScreen';
+export { default as AgreementWizardScreen } from './AgreementWizardScreen';
+export { default as AgreementDetailScreen } from './AgreementDetailScreen';
 export { ActivityScreen } from './ActivityScreen';
 export { SettingsScreen } from './SettingsScreen';
 export { AuthScreen } from './AuthScreen';
