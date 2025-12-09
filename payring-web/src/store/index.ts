@@ -100,7 +100,7 @@ interface NotificationsState {
   clearNotifications: () => void;
 }
 
-export const useNotificationsStore = create<NotificationsState>((set, get) => ({
+export const useNotificationsStore = create<NotificationsState>((set) => ({
   notifications: [],
   unreadCount: 0,
   
@@ -229,7 +229,7 @@ interface StoreState {
   clearUser: () => void;
 }
 
-export const useStore = create<StoreState>()((set, get) => ({
+export const useStore = create<StoreState>()((set) => ({
   user: null,
   setUser: (user) => {
     set({ user });

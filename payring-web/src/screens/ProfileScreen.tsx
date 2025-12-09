@@ -1,15 +1,12 @@
 // PayRing Web - Profile Settings Screen
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { 
-  User, Mail, Phone, Camera, Check, Shield, 
-  ChevronRight, Edit2, BadgeCheck 
+  Camera, 
+  Edit2, BadgeCheck, Shield 
 } from 'lucide-react';
-import { useAuthStore } from '../store';
 
 export function ProfileScreen() {
-  const { user } = useAuthStore();
-  
-  const [profile, setProfile] = useState({
+  const [profile] = useState({
     firstName: 'Alex',
     lastName: 'Chen',
     username: '@alexc.design',
@@ -19,8 +16,6 @@ export function ProfileScreen() {
     phoneVerified: true,
     accountVerified: true,
   });
-
-  const [editing, setEditing] = useState<string | null>(null);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-24">

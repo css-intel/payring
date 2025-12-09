@@ -1,14 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Search, Filter, FileText, ChevronRight } from 'lucide-react';
+import { Plus, Search, FileText, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge, StatusBadge } from '@/components/ui/badge';
+import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { UserAvatar } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
-import { useAgreementsStore } from '@/store';
 import { AGREEMENT_TYPES, calculateProgress } from '@payring/shared';
 import type { AgreementStatus } from '@payring/shared';
 

@@ -11,7 +11,7 @@ import { APP_CONFIG } from '@payring/shared';
 
 export function AuthScreen() {
   const navigate = useNavigate();
-  const { setUser, setLoading } = useAuthStore();
+  const { setUser } = useAuthStore();
   const [mode, setMode] = useState<'login' | 'signup'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

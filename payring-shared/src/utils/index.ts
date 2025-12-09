@@ -10,7 +10,6 @@ import type { Currency, Timestamp } from '../types/models';
  * Create a Currency object from cents
  */
 export function createCurrency(amountMinor: number, currency: string = 'USD'): Currency {
-  const amount = amountMinor / 100;
   return {
     amountMinor,
     currency,

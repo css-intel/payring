@@ -1,8 +1,6 @@
-import { ArrowUpRight, ArrowDownLeft, FileText, CheckCircle, Clock, Filter } from 'lucide-react';
+import { ArrowUpRight, ArrowDownLeft, FileText, CheckCircle, Clock } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { UserAvatar } from '@/components/ui/avatar';
-import { useActivityStore } from '@/store';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
 

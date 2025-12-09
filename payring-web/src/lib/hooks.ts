@@ -7,14 +7,12 @@ import {
   onAuthStateChanged,
   GoogleAuthProvider,
   signInWithPopup,
-  User as FirebaseUser,
   updateProfile
 } from 'firebase/auth';
 import { 
   collection, 
   doc, 
   getDoc, 
-  getDocs, 
   addDoc, 
   updateDoc, 
   deleteDoc,
@@ -22,12 +20,11 @@ import {
   where, 
   orderBy, 
   onSnapshot,
-  Timestamp,
   serverTimestamp
 } from 'firebase/firestore';
 import { auth, db } from './firebase';
 import { useStore } from '../store';
-import type { Agreement, User, Milestone, Payment, Notification } from '@payring/shared';
+import type { Agreement, Milestone, Payment, Notification } from '@payring/shared';
 
 // Auth Hook
 export function useAuth() {
@@ -38,7 +35,6 @@ export function useAuth() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        // Get additional user data from Firestore
         const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
         const userData = userDoc.data();
         
@@ -46,9 +42,8 @@ export function useAuth() {
           id: firebaseUser.uid,
           email: firebaseUser.email || '',
           displayName: firebaseUser.displayName || userData?.displayName || '',
-          photoURL: firebaseUser.photoURL || userData?.photoURL,
-          walletBalance: userData?.walletBalance || 0,
-        });
+          avatarUrl: firebaseUser.photoURL || userData?.avatarUrl,
+        } as any);
       } else {
         clearUser();
       }
@@ -63,8 +58,9 @@ export function useAuth() {
     setError(null);
     try {
       await signInWithEmailAndPassword(auth, email, password);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Sign in failed';
+      setError(message);
       throw err;
     } finally {
       setLoading(false);
@@ -78,7 +74,6 @@ export function useAuth() {
       const { user: firebaseUser } = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(firebaseUser, { displayName });
       
-      // Create user document in Firestore
       await addDoc(collection(db, 'users'), {
         uid: firebaseUser.uid,
         email,
@@ -86,8 +81,9 @@ export function useAuth() {
         createdAt: serverTimestamp(),
         walletBalance: 0,
       });
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Sign up failed';
+      setError(message);
       throw err;
     } finally {
       setLoading(false);
@@ -100,8 +96,9 @@ export function useAuth() {
     try {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Google sign in failed';
+      setError(message);
       throw err;
     } finally {
       setLoading(false);
@@ -109,8 +106,13 @@ export function useAuth() {
   }, []);
 
   const logout = useCallback(async () => {
-    await signOut(auth);
-    clearUser();
+    try {
+      await signOut(auth);
+      clearUser();
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Logout failed';
+      setError(message);
+    }
   }, [clearUser]);
 
   return {
@@ -142,7 +144,7 @@ export function useAgreements() {
     const q = query(
       collection(db, 'agreements'),
       where('participants', 'array-contains', user.id),
-      orderBy('updatedAt', 'desc')
+      orderBy('createdAt', 'desc')
     );
 
     const unsubscribe = onSnapshot(q, 
@@ -150,8 +152,8 @@ export function useAgreements() {
         const docs = snapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data(),
-          createdAt: doc.data().createdAt?.toDate?.() || new Date(),
-          updatedAt: doc.data().updatedAt?.toDate?.() || new Date(),
+          createdAt: doc.data().createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+          updatedAt: doc.data().updatedAt?.toDate?.()?.toISOString() || new Date().toISOString(),
         })) as Agreement[];
         setAgreements(docs);
         setLoading(false);
@@ -171,7 +173,7 @@ export function useAgreements() {
     const agreementData = {
       ...data,
       creatorId: user.id,
-      participants: [user.id, data.counterpartyId],
+      participants: [user.id],
       status: 'draft',
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
@@ -202,90 +204,6 @@ export function useAgreements() {
   };
 }
 
-// Single Agreement Hook
-export function useAgreement(id: string) {
-  const [agreement, setAgreement] = useState<Agreement | null>(null);
-  const [milestones, setMilestones] = useState<Milestone[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!id) {
-      setLoading(false);
-      return;
-    }
-
-    // Subscribe to agreement
-    const unsubAgreement = onSnapshot(
-      doc(db, 'agreements', id),
-      (doc) => {
-        if (doc.exists()) {
-          setAgreement({
-            id: doc.id,
-            ...doc.data(),
-            createdAt: doc.data().createdAt?.toDate?.() || new Date(),
-            updatedAt: doc.data().updatedAt?.toDate?.() || new Date(),
-          } as Agreement);
-        }
-        setLoading(false);
-      },
-      (err) => {
-        setError(err.message);
-        setLoading(false);
-      }
-    );
-
-    // Subscribe to milestones
-    const milestonesQuery = query(
-      collection(db, 'agreements', id, 'milestones'),
-      orderBy('order', 'asc')
-    );
-
-    const unsubMilestones = onSnapshot(
-      milestonesQuery,
-      (snapshot) => {
-        const docs = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-          dueDate: doc.data().dueDate?.toDate?.() || undefined,
-          completedAt: doc.data().completedAt?.toDate?.() || undefined,
-        })) as Milestone[];
-        setMilestones(docs);
-      }
-    );
-
-    return () => {
-      unsubAgreement();
-      unsubMilestones();
-    };
-  }, [id]);
-
-  const completeMilestone = useCallback(async (milestoneId: string) => {
-    await updateDoc(doc(db, 'agreements', id, 'milestones', milestoneId), {
-      status: 'completed',
-      completedAt: serverTimestamp(),
-    });
-  }, [id]);
-
-  const addMilestone = useCallback(async (data: Partial<Milestone>) => {
-    await addDoc(collection(db, 'agreements', id, 'milestones'), {
-      ...data,
-      status: 'pending',
-      order: milestones.length,
-      createdAt: serverTimestamp(),
-    });
-  }, [id, milestones.length]);
-
-  return {
-    agreement,
-    milestones,
-    loading,
-    error,
-    completeMilestone,
-    addMilestone,
-  };
-}
-
 // Payments Hook
 export function usePayments() {
   const { user } = useStore();
@@ -300,19 +218,18 @@ export function usePayments() {
       return;
     }
 
-    // Get payments where user is sender or receiver
     const q = query(
       collection(db, 'payments'),
       where('participants', 'array-contains', user.id),
       orderBy('createdAt', 'desc')
     );
 
-    const unsubscribe = onSnapshot(q, 
+    const unsubscribe = onSnapshot(q,
       (snapshot) => {
         const docs = snapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data(),
-          createdAt: doc.data().createdAt?.toDate?.() || new Date(),
+          createdAt: doc.data().createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
         })) as Payment[];
         setPayments(docs);
         setLoading(false);
@@ -331,36 +248,48 @@ export function usePayments() {
 
     const paymentData = {
       senderId: user.id,
+      senderName: user.displayName,
       receiverId: recipientId,
-      participants: [user.id, recipientId],
-      amount,
+      receiverName: '',
+      amount: {
+        amountMinor: amount * 100,
+        currency: 'USD',
+        formatted: `$${amount.toFixed(2)}`,
+      },
+      type: 'send',
+      status: 'pending',
       note,
-      status: 'completed',
-      type: 'transfer',
+      participants: [user.id, recipientId],
       createdAt: serverTimestamp(),
     };
 
     const docRef = await addDoc(collection(db, 'payments'), paymentData);
     return docRef.id;
-  }, [user?.id]);
+  }, [user]);
 
-  const requestPayment = useCallback(async (fromId: string, amount: number, note?: string) => {
+  const requestPayment = useCallback(async (fromUserId: string, amount: number, note?: string) => {
     if (!user?.id) throw new Error('Not authenticated');
 
     const paymentData = {
-      senderId: fromId,
+      senderId: fromUserId,
+      senderName: '',
       receiverId: user.id,
-      participants: [user.id, fromId],
-      amount,
-      note,
-      status: 'pending',
+      receiverName: user.displayName,
+      amount: {
+        amountMinor: amount * 100,
+        currency: 'USD',
+        formatted: `$${amount.toFixed(2)}`,
+      },
       type: 'request',
+      status: 'pending',
+      note,
+      participants: [user.id, fromUserId],
       createdAt: serverTimestamp(),
     };
 
     const docRef = await addDoc(collection(db, 'payments'), paymentData);
     return docRef.id;
-  }, [user?.id]);
+  }, [user]);
 
   return {
     payments,
@@ -371,16 +300,99 @@ export function usePayments() {
   };
 }
 
+// Milestones Hook
+export function useMilestones(agreementId: string) {
+  const [milestones, setMilestones] = useState<Milestone[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!agreementId) {
+      setMilestones([]);
+      setLoading(false);
+      return;
+    }
+
+    const q = query(
+      collection(db, 'milestones'),
+      where('agreementId', '==', agreementId),
+      orderBy('order', 'asc')
+    );
+
+    const unsubscribe = onSnapshot(q,
+      (snapshot) => {
+        const docs = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+          dueDate: doc.data().dueDate?.toDate?.()?.toISOString() || undefined,
+        })) as Milestone[];
+        setMilestones(docs);
+        setLoading(false);
+      },
+      (err) => {
+        setError(err.message);
+        setLoading(false);
+      }
+    );
+
+    return () => unsubscribe();
+  }, [agreementId]);
+
+  const createMilestone = useCallback(async (data: Partial<Milestone>) => {
+    const milestoneData = {
+      ...data,
+      agreementId,
+      status: 'pending',
+      createdAt: serverTimestamp(),
+    };
+
+    const docRef = await addDoc(collection(db, 'milestones'), milestoneData);
+    return docRef.id;
+  }, [agreementId]);
+
+  const updateMilestone = useCallback(async (id: string, data: Partial<Milestone>) => {
+    await updateDoc(doc(db, 'milestones', id), {
+      ...data,
+      updatedAt: serverTimestamp(),
+    });
+  }, []);
+
+  const approveMilestone = useCallback(async (id: string) => {
+    await updateDoc(doc(db, 'milestones', id), {
+      status: 'approved',
+      approvedAt: serverTimestamp(),
+    });
+  }, []);
+
+  const completeMilestone = useCallback(async (id: string) => {
+    await updateDoc(doc(db, 'milestones', id), {
+      status: 'completed',
+      completedAt: serverTimestamp(),
+    });
+  }, []);
+
+  return {
+    milestones,
+    loading,
+    error,
+    createMilestone,
+    updateMilestone,
+    approveMilestone,
+    completeMilestone,
+  };
+}
+
 // Notifications Hook
 export function useNotifications() {
   const { user } = useStore();
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [loading, setLoading] = useState(true);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!user?.id) {
       setNotifications([]);
+      setUnreadCount(0);
       setLoading(false);
       return;
     }
@@ -395,10 +407,11 @@ export function useNotifications() {
       const docs = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
-        createdAt: doc.data().createdAt?.toDate?.() || new Date(),
+        createdAt: doc.data().createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
       })) as Notification[];
+      
       setNotifications(docs);
-      setUnreadCount(docs.filter(n => !n.read).length);
+      setUnreadCount(docs.filter(n => !n.isRead).length);
       setLoading(false);
     });
 
@@ -406,21 +419,71 @@ export function useNotifications() {
   }, [user?.id]);
 
   const markAsRead = useCallback(async (id: string) => {
-    await updateDoc(doc(db, 'notifications', id), { read: true });
+    await updateDoc(doc(db, 'notifications', id), {
+      isRead: true,
+      readAt: serverTimestamp(),
+    });
   }, []);
 
   const markAllAsRead = useCallback(async () => {
-    const unread = notifications.filter(n => !n.read);
+    const unread = notifications.filter(n => !n.isRead);
     await Promise.all(
-      unread.map(n => updateDoc(doc(db, 'notifications', n.id), { read: true }))
+      unread.map(n => 
+        updateDoc(doc(db, 'notifications', n.id), {
+          isRead: true,
+          readAt: serverTimestamp(),
+        })
+      )
     );
   }, [notifications]);
 
   return {
     notifications,
-    loading,
     unreadCount,
+    loading,
     markAsRead,
     markAllAsRead,
+  };
+}
+
+// User Profile Hook
+export function useUserProfile(userId?: string) {
+  const { user } = useStore();
+  const [profile, setProfile] = useState<Record<string, unknown> | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const targetUserId = userId || user?.id;
+
+  useEffect(() => {
+    if (!targetUserId) {
+      setProfile(null);
+      setLoading(false);
+      return;
+    }
+
+    const fetchProfile = async () => {
+      const userDoc = await getDoc(doc(db, 'users', targetUserId));
+      if (userDoc.exists()) {
+        setProfile({ id: userDoc.id, ...userDoc.data() });
+      }
+      setLoading(false);
+    };
+
+    fetchProfile();
+  }, [targetUserId]);
+
+  const updateUserProfile = useCallback(async (data: Record<string, unknown>) => {
+    if (!targetUserId) throw new Error('No user ID');
+
+    await updateDoc(doc(db, 'users', targetUserId), {
+      ...data,
+      updatedAt: serverTimestamp(),
+    });
+  }, [targetUserId]);
+
+  return {
+    profile,
+    loading,
+    updateProfile: updateUserProfile,
   };
 }

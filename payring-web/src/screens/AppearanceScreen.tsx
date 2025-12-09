@@ -1,5 +1,5 @@
 // PayRing Web - Appearance Settings Screen
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Palette, Sun, Moon, Sparkles, Circle, Check, Monitor } from 'lucide-react';
 import { useUIStore } from '../store';
 

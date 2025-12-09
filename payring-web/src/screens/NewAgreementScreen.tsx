@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Mic, Sparkles, ChevronRight, FileText, Wand2 } from 'lucide-react';
+import { Mic, Sparkles, Wand2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
@@ -8,7 +8,7 @@ import { AGREEMENT_TYPE_LIST } from '@payring/shared';
 
 export function NewAgreementScreen() {
   const navigate = useNavigate();
-  const [inputMethod, setInputMethod] = useState<'voice' | 'text' | 'template' | null>(null);
+  const [, setInputMethod] = useState<'voice' | 'text' | 'template' | null>(null);
   const [textInput, setTextInput] = useState('');
   const [isRecording, setIsRecording] = useState(false);
 

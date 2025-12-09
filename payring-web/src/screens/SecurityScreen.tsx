@@ -1,8 +1,8 @@
 // PayRing Web - Security & Privacy Screen
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { 
   Shield, Lock, Smartphone, Key, Bell, Mail, MessageSquare,
-  ChevronRight, Download, Trash2, AlertTriangle, CheckCircle2
+  ChevronRight, Download, Trash2, CheckCircle2
 } from 'lucide-react';
 
 export function SecurityScreen() {

@@ -10,19 +10,15 @@ import {
   ChevronRight,
   Bell,
   FileText,
-  Moon,
-  Sun,
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { UserAvatar } from '@/components/ui/avatar';
-import { useAuthStore, useUIStore } from '@/store';
-import { cn } from '@/lib/utils';
+import { useAuthStore } from '@/store';
 import { APP_CONFIG } from '@payring/shared';
 
 export function SettingsScreen() {
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
-  const { theme, setTheme } = useUIStore();
 
   // Mock user for demo
   const mockUser = user || {
@@ -82,7 +78,6 @@ export function SettingsScreen() {
           label: 'Appearance',
           description: 'Theme and display settings',
           route: '/settings/appearance',
-          action: 'theme',
         },
       ],
     },
@@ -108,11 +103,6 @@ export function SettingsScreen() {
   const handleLogout = () => {
     logout();
     navigate('/');
-  };
-
-  const toggleTheme = () => {
-    const newTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(newTheme);
   };
 
   return (
@@ -155,11 +145,7 @@ export function SettingsScreen() {
                   <button
                     key={item.label}
                     onClick={() => {
-                      if (item.action === 'theme') {
-                        toggleTheme();
-                      } else {
-                        navigate(item.route);
-                      }
+                      navigate(item.route);
                     }}
                     className="w-full flex items-center gap-4 p-4 hover:bg-muted/50 transition-colors text-left"
                   >
@@ -170,17 +156,7 @@ export function SettingsScreen() {
                       <p className="font-medium">{item.label}</p>
                       <p className="text-sm text-muted-foreground">{item.description}</p>
                     </div>
-                    {item.action === 'theme' ? (
-                      <div className="flex items-center gap-2">
-                        {theme === 'dark' ? (
-                          <Moon className="w-5 h-5 text-primary" />
-                        ) : (
-                          <Sun className="w-5 h-5 text-primary" />
-                        )}
-                      </div>
-                    ) : (
-                      <ChevronRight className="w-5 h-5 text-muted-foreground" />
-                    )}
+                    <ChevronRight className="w-5 h-5 text-muted-foreground" />
                   </button>
                 ))}
               </CardContent>

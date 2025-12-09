@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Plus, 
@@ -12,20 +11,16 @@ import {
   ChevronRight,
   TrendingUp
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { UserAvatar } from '@/components/ui/avatar';
-import { Badge, StatusBadge } from '@/components/ui/badge';
+import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { useAuthStore, useActivityStore, useAgreementsStore } from '@/store';
-import { formatCurrency, getRelativeTime } from '@payring/shared';
+import { useAuthStore } from '@/store';
 import { APP_CONFIG } from '@payring/shared';
 
 export function DashboardScreen() {
   const navigate = useNavigate();
   const { user, wallet } = useAuthStore();
-  const { activities } = useActivityStore();
-  const { agreements } = useAgreementsStore();
 
   // Mock data for demo
   const mockUser = user || {
@@ -71,7 +66,7 @@ export function DashboardScreen() {
   ];
 
   // Mock recent activity
-  const recentActivity = activities.length > 0 ? activities.slice(0, 3) : [
+  const recentActivity = [
     {
       id: '1',
       type: 'payment_received',
@@ -102,22 +97,22 @@ export function DashboardScreen() {
   ];
 
   // Mock active agreements
-  const activeAgreements = agreements.length > 0 ? agreements.slice(0, 2) : [
+  const activeAgreements = [
     {
       id: '1',
       title: 'Website Redesign',
-      counterparty: 'Tech Startup Inc',
-      progress: 66,
-      milestones: '2/3',
-      totalValue: '$3,000',
+      counterpartyName: 'Tech Startup Inc',
+      progressPercent: 66,
+      milestonesLabel: '2/3',
+      totalValueFormatted: '$3,000',
     },
     {
       id: '2',
       title: 'Logo Design Package',
-      counterparty: 'Coffee Shop Co',
-      progress: 33,
-      milestones: '1/3',
-      totalValue: '$450',
+      counterpartyName: 'Coffee Shop Co',
+      progressPercent: 33,
+      milestonesLabel: '1/3',
+      totalValueFormatted: '$450',
     },
   ];
 
@@ -225,15 +220,15 @@ export function DashboardScreen() {
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <h4 className="font-semibold">{agreement.title}</h4>
-                    <p className="text-sm text-muted-foreground">{agreement.counterparty}</p>
+                    <p className="text-sm text-muted-foreground">{agreement.counterpartyName}</p>
                   </div>
-                  <Badge variant="info">{agreement.milestones}</Badge>
+                  <Badge variant="info">{agreement.milestonesLabel}</Badge>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Progress value={agreement.progress} className="flex-1" />
-                  <span className="text-sm font-medium">{agreement.progress}%</span>
+                  <Progress value={agreement.progressPercent} className="flex-1" />
+                  <span className="text-sm font-medium">{agreement.progressPercent}%</span>
                 </div>
-                <p className="text-sm text-muted-foreground mt-2">Total: {agreement.totalValue}</p>
+                <p className="text-sm text-muted-foreground mt-2">Total: {agreement.totalValueFormatted}</p>
               </CardContent>
             </Card>
           ))}

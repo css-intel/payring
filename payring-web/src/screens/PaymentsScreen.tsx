@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { UserAvatar } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
-import { QUICK_AMOUNTS, formatCurrency } from '@payring/shared';
+import { QUICK_AMOUNTS } from '@payring/shared';
 
 export function PaymentsScreen() {
   const navigate = useNavigate();
