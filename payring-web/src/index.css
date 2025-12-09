@@ -1,0 +1,165 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 217 91% 49%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 217 91% 49%;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217 91% 59%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 217 91% 59%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+}
+
+@layer components {
+  /* PayRing Card Style */
+  .payring-card {
+    @apply bg-card text-card-foreground rounded-xl border border-border shadow-payring;
+  }
+
+  /* PayRing Primary Button */
+  .payring-button-primary {
+    @apply bg-primary text-primary-foreground px-6 py-3 rounded-xl font-semibold;
+    @apply hover:bg-primary/90 active:scale-[0.98] transition-all;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* PayRing Secondary Button */
+  .payring-button-secondary {
+    @apply bg-secondary text-secondary-foreground px-6 py-3 rounded-xl font-semibold;
+    @apply hover:bg-secondary/80 active:scale-[0.98] transition-all;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* PayRing Ghost Button */
+  .payring-button-ghost {
+    @apply text-foreground px-4 py-2 rounded-xl font-medium;
+    @apply hover:bg-muted active:scale-[0.98] transition-all;
+  }
+
+  /* PayRing Input */
+  .payring-input {
+    @apply w-full px-4 py-3 rounded-xl border border-input bg-background;
+    @apply focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent;
+    @apply placeholder:text-muted-foreground transition-all;
+  }
+
+  /* Status Badges */
+  .status-badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  .status-badge-success {
+    @apply bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400;
+  }
+  .status-badge-warning {
+    @apply bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400;
+  }
+  .status-badge-error {
+    @apply bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400;
+  }
+  .status-badge-info {
+    @apply bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400;
+  }
+
+  /* Mobile Container */
+  .mobile-container {
+    @apply max-w-md mx-auto min-h-screen bg-background;
+  }
+
+  /* Screen Header */
+  .screen-header {
+    @apply sticky top-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60;
+    @apply border-b border-border px-4 py-3;
+  }
+
+  /* Bottom Navigation */
+  .bottom-nav {
+    @apply fixed bottom-0 left-0 right-0 bg-background border-t border-border;
+    @apply flex items-center justify-around py-2 px-4;
+    padding-bottom: env(safe-area-inset-bottom, 0.5rem);
+  }
+
+  .bottom-nav-item {
+    @apply flex flex-col items-center gap-1 py-2 px-3 rounded-xl transition-colors;
+    @apply text-muted-foreground hover:text-foreground;
+  }
+
+  .bottom-nav-item.active {
+    @apply text-primary bg-primary/10;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
+}
+
+/* Hide scrollbar for mobile */
+@media (max-width: 768px) {
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  * {
+    scrollbar-width: none;
+  }
+}
