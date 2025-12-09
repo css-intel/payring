@@ -11,6 +11,13 @@ import { AuthScreen } from '@/screens/AuthScreen';
 import { ProfileScreen } from '@/screens/ProfileScreen';
 import { SecurityScreen } from '@/screens/SecurityScreen';
 import { AppearanceScreen } from '@/screens/AppearanceScreen';
+import { WalletScreen } from '@/screens/WalletScreen';
+import { TermsOfServiceScreen } from '@/screens/TermsOfServiceScreen';
+import { PrivacyPolicyScreen } from '@/screens/PrivacyPolicyScreen';
+import { RefundPolicyScreen } from '@/screens/RefundPolicyScreen';
+import { HelpCenterScreen } from '@/screens/HelpCenterScreen';
+import { DisputeScreen, NewDisputeScreen } from '@/screens/DisputeScreen';
+import { OnboardingScreen } from '@/screens/OnboardingScreen';
 import { useAuthStore, useUIStore } from '@/store';
 
 // Layout wrapper for authenticated pages
@@ -179,6 +186,51 @@ export default function App() {
           </ProtectedRoute>
         }
       />
+      
+      {/* Wallet */}
+      <Route
+        path="/wallet"
+        element={
+          <ProtectedRoute>
+            <WalletScreen />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Disputes */}
+      <Route
+        path="/disputes"
+        element={
+          <ProtectedRoute>
+            <DisputeScreen />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/disputes/new"
+        element={
+          <ProtectedRoute>
+            <NewDisputeScreen />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/disputes/:id"
+        element={
+          <ProtectedRoute>
+            <DisputeScreen />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Onboarding */}
+      <Route path="/onboarding" element={<OnboardingScreen />} />
+
+      {/* Public legal pages - no auth required */}
+      <Route path="/terms" element={<TermsOfServiceScreen />} />
+      <Route path="/privacy" element={<PrivacyPolicyScreen />} />
+      <Route path="/refund-policy" element={<RefundPolicyScreen />} />
+      <Route path="/help" element={<HelpCenterScreen />} />
 
       {/* Catch all - redirect to home */}
       <Route path="*" element={<Navigate to="/" replace />} />

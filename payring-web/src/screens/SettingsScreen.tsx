@@ -10,6 +10,8 @@ import {
   ChevronRight,
   Bell,
   FileText,
+  Wallet,
+  Scale,
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { UserAvatar } from '@/components/ui/avatar';
@@ -57,16 +59,22 @@ export function SettingsScreen() {
       title: 'Payments',
       items: [
         {
+          icon: Wallet,
+          label: 'Wallet',
+          description: 'Balance, deposits, and withdrawals',
+          route: '/wallet',
+        },
+        {
           icon: CreditCard,
           label: 'Payment Methods',
           description: 'Manage linked banks and cards',
-          route: '/settings/payments',
+          route: '/wallet',
         },
         {
           icon: FileText,
           label: 'Transaction History',
           description: 'View all your transactions',
-          route: '/settings/transactions',
+          route: '/wallet',
         },
       ],
     },
@@ -88,13 +96,19 @@ export function SettingsScreen() {
           icon: HelpCircle,
           label: 'Help Center',
           description: 'FAQs and support articles',
-          route: '/settings/help',
+          route: '/help',
+        },
+        {
+          icon: Scale,
+          label: 'Legal',
+          description: 'Terms, Privacy, and Refund Policy',
+          route: '/terms',
         },
         {
           icon: Info,
           label: 'About PayRing',
           description: `Version ${APP_CONFIG.version}`,
-          route: '/settings/about',
+          route: '/help',
         },
       ],
     },

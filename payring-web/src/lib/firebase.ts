@@ -24,4 +24,18 @@ export const db = getFirestore(app);
 export const storage = getStorage(app);
 export const functions = getFunctions(app);
 
+// Firestore collection names
+export const COLLECTIONS = {
+  USERS: 'users',
+  AGREEMENTS: 'agreements',
+  PAYMENTS: 'payments',
+  MILESTONES: 'milestones',
+  NOTIFICATIONS: 'notifications',
+  TRANSACTIONS: 'transactions',
+  WALLETS: 'wallets',
+  CONTACTS: 'contacts',
+  DISPUTES: 'disputes',
+  TEMPLATES: 'templates',
+} as const;
+
 export default app;
